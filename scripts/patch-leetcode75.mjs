@@ -1542,7 +1542,7 @@ const lc75 = [
     timeComplexity: "O(m) per operation",
     tags: ["leetcode-75", "trie"],
   },
-  // 70 - Search Suggestions System
+  // 71 - Search Suggestions System
   {
     id: "leetcode75-70",
     dsaTopic: "Trie",
@@ -1564,9 +1564,53 @@ const lc75 = [
     timeComplexity: "O(m log m + n log m)",
     tags: ["leetcode-75", "trie"],
   },
-  // 71 - Daily Temperatures
+  // 71 - Non-overlapping Intervals
   {
-    id: "leetcode75-74",
+    id: "leetcode75-71",
+    dsaTopic: "Intervals",
+    difficulty: "Medium",
+    question: "Non-overlapping Intervals\n\nGiven an array of intervals intervals where intervals[i] = [starti, endi], return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.\n\nNote that intervals which only touch at a point are non-overlapping. For example, [1, 2] and [2, 3] are non-overlapping.\n\nExample:\nInput: intervals = [[1,2],[2,3],[3,4],[1,3]]\nOutput: 1",
+    answer: "Sort by end time. Greedily keep intervals that don't overlap with the last kept. Count removals.",
+    expectedFresherAnswer: "Sort intervals by end time. Track the end of the last kept interval. For each interval: if it starts >= last end, keep it (update last end). Otherwise it overlaps — increment removal count. Time: O(n log n), Space: O(1).",
+    minimumAcceptableAnswer: "Candidate should sort by end time and use a greedy approach.",
+    hint: "Sort by end time. Greedily keep non-overlapping intervals. Count how many you skip.",
+    optimalApproach: "Sort by end + greedy scan. O(n log n) time, O(1) space.",
+    output: "Input: [[1,2],[2,3],[3,4],[1,3]]\nOutput: 1\n(Remove [1,3])\n\nInput: [[1,2],[1,2],[1,2]]\nOutput: 2",
+    solution: `function eraseOverlapIntervals(intervals) {\n  intervals.sort((a, b) => a[1] - b[1]);\n  let count = 0, end = -Infinity;\n  for (const [s, e] of intervals) {\n    if (s >= end) end = e;\n    else count++;\n  }\n  return count;\n}`,
+    solutions: {
+      python: `def eraseOverlapIntervals(intervals):\n    intervals.sort(key=lambda x: x[1])\n    count, end = 0, float('-inf')\n    for s, e in intervals:\n        if s >= end: end = e\n        else: count += 1\n    return count`,
+      java: `class Solution {\n    public int eraseOverlapIntervals(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> a[1] - b[1]);\n        int count = 0, end = Integer.MIN_VALUE;\n        for (int[] iv : intervals) {\n            if (iv[0] >= end) end = iv[1];\n            else count++;\n        }\n        return count;\n    }\n}`,
+      javascript: `function eraseOverlapIntervals(intervals) {\n  intervals.sort((a, b) => a[1] - b[1]);\n  let count = 0, end = -Infinity;\n  for (const [s, e] of intervals) {\n    if (s >= end) end = e;\n    else count++;\n  }\n  return count;\n}`,
+      cpp: `class Solution {\npublic:\n    int eraseOverlapIntervals(vector<vector<int>>& intervals) {\n        sort(intervals.begin(), intervals.end(), [](auto& a, auto& b){ return a[1] < b[1]; });\n        int count = 0, end = INT_MIN;\n        for (auto& iv : intervals) {\n            if (iv[0] >= end) end = iv[1];\n            else count++;\n        }\n        return count;\n    }\n};`,
+    },
+    timeComplexity: "O(n log n)",
+    tags: ["leetcode-75", "intervals"],
+  },
+  // 73 - Minimum Number of Arrows to Burst Balloons
+  {
+    id: "leetcode75-72",
+    dsaTopic: "Intervals",
+    difficulty: "Medium",
+    question: "Minimum Number of Arrows to Burst Balloons\n\nThere are some spherical balloons taped onto a flat wall that represents the XY-plane. The balloons are represented as a 2D integer array points where points[i] = [xstart, xend] denotes a balloon whose horizontal diameter stretches between xstart and xend.\n\nArrows can be shot up directly vertically from different points along the x-axis. A balloon with xstart and xend is burst by an arrow shot at x if xstart <= x <= xend.\n\nGiven the array points, return the minimum number of arrows that must be shot to burst all balloons.\n\nExample:\nInput: points = [[10,16],[2,8],[1,6],[7,12]]\nOutput: 2",
+    answer: "Sort by end coordinate. Shoot an arrow at the end of the first balloon. All balloons whose start <= that end are burst. Move to the next unpopped balloon.",
+    expectedFresherAnswer: "Sort by end. Place arrow at points[0][1]. For each subsequent balloon: if its start > current arrow position, shoot a new arrow at its end. Count arrows. Time: O(n log n), Space: O(1).",
+    minimumAcceptableAnswer: "Candidate should sort by end and greedily place arrows.",
+    hint: "Sort by end. Place arrow at first balloon's end. Skip all balloons hit. Repeat.",
+    optimalApproach: "Sort by end + greedy. O(n log n) time, O(1) space.",
+    output: "Input: [[10,16],[2,8],[1,6],[7,12]]\nOutput: 2\n(Arrows at x=6 and x=11)\n\nInput: [[1,2],[3,4],[5,6],[7,8]]\nOutput: 4",
+    solution: `function findMinArrowShots(points) {\n  points.sort((a, b) => a[1] - b[1]);\n  let arrows = 1, end = points[0][1];\n  for (let i = 1; i < points.length; i++) {\n    if (points[i][0] > end) {\n      arrows++;\n      end = points[i][1];\n    }\n  }\n  return arrows;\n}`,
+    solutions: {
+      python: `def findMinArrowShots(points):\n    if not points: return 0\n    points.sort(key=lambda x: x[1])\n    arrows, end = 1, points[0][1]\n    for s, e in points[1:]:\n        if s > end:\n            arrows += 1\n            end = e\n    return arrows`,
+      java: `class Solution {\n    public int findMinArrowShots(int[][] points) {\n        Arrays.sort(points, (a, b) -> Integer.compare(a[1], b[1]));\n        int arrows = 1, end = points[0][1];\n        for (int i = 1; i < points.length; i++) {\n            if (points[i][0] > end) { arrows++; end = points[i][1]; }\n        }\n        return arrows;\n    }\n}`,
+      javascript: `function findMinArrowShots(points) {\n  points.sort((a, b) => a[1] - b[1]);\n  let arrows = 1, end = points[0][1];\n  for (let i = 1; i < points.length; i++) {\n    if (points[i][0] > end) { arrows++; end = points[i][1]; }\n  }\n  return arrows;\n}`,
+      cpp: `class Solution {\npublic:\n    int findMinArrowShots(vector<vector<int>>& points) {\n        sort(points.begin(), points.end(), [](auto& a, auto& b){ return a[1] < b[1]; });\n        int arrows = 1, end = points[0][1];\n        for (int i = 1; i < points.size(); i++) {\n            if (points[i][0] > end) { arrows++; end = points[i][1]; }\n        }\n        return arrows;\n    }\n};`,
+    },
+    timeComplexity: "O(n log n)",
+    tags: ["leetcode-75", "intervals"],
+  },
+  // 74 - Daily Temperatures
+  {
+    id: "leetcode75-73",
     dsaTopic: "Monotonic Stack",
     difficulty: "Medium",
     question: "Daily Temperatures\n\nGiven an array of integers temperatures represents the daily temperatures, return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature. If there is no future day for which this is possible, keep answer[i] == 0 instead.\n\nExample:\nInput: temperatures = [73,74,75,71,69,72,76,73]\nOutput: [1,1,4,2,1,1,0,0]",
@@ -1586,9 +1630,9 @@ const lc75 = [
     timeComplexity: "O(n)",
     tags: ["leetcode-75", "monotonic-stack"],
   },
-  // 72 - Online Stock Span (first instance)
+  // 74 - Online Stock Span
   {
-    id: "leetcode75-72",
+    id: "leetcode75-74",
     dsaTopic: "Monotonic Stack",
     difficulty: "Medium",
     question: "Online Stock Span\n\nDesign an algorithm that collects daily price quotes for some asset and returns the span of that asset's price for the current day.\n\nThe span of the asset's price today is defined as the maximum number of consecutive days (starting from today and going backward) for which the stock price was less than or equal to today's price.\n\nFor example, if the prices of the stock in the last four days is [7,2,1,2] and the price of the stock today is 2, then the span of today is 4 because starting from today, the price of the stock was less than or equal to 2 for 4 consecutive days.\n\nImplement the StockSpanner class:\n- StockSpanner() Initializes the object of the class.\n- int next(int price) Returns the span of the stock's price given that today's price is price.\n\nExample:\nInput: [\"StockSpanner\",\"next\",\"next\",\"next\",\"next\",\"next\",\"next\",\"next\"]\n[[],[100],[80],[60],[70],[60],[75],[85]]\nOutput: [null,1,1,1,2,1,4,6]",
@@ -1607,4 +1651,40 @@ const lc75 = [
     },
     timeComplexity: "O(1) amortized",
     tags: ["leetcode-75", "monotonic-stack"],
-  },]
+  },
+  // 75 - Minimum Number of Arrows to Burst Balloons (final entry)
+  {
+    id: "leetcode75-75",
+    dsaTopic: "Intervals",
+    difficulty: "Medium",
+    question: "Minimum Number of Arrows to Burst Balloons\n\nThere are some spherical balloons taped onto a flat wall. The balloons are represented as a 2D array points where points[i] = [xstart, xend].\n\nArrows can be shot up directly vertically. A balloon [xstart, xend] is burst by an arrow at x if xstart <= x <= xend. You want to burst all balloons.\n\nReturn the minimum number of arrows that must be shot to burst all balloons.\n\nExample:\nInput: points = [[10,16],[2,8],[1,6],[7,12]]\nOutput: 2",
+    answer: "Sort by end coordinate. Greedily shoot one arrow at the end of the first unbursted balloon.",
+    expectedFresherAnswer: "Sort by end. Fire arrow at points[0][1]. For each balloon: if its xstart > last arrow position, fire a new arrow there. Time: O(n log n), Space: O(1).",
+    minimumAcceptableAnswer: "Candidate should sort by end and greedily count arrows.",
+    hint: "Sort by end. Track arrow position. Increment count when a balloon starts after the current arrow.",
+    optimalApproach: "Sort by end + greedy arrow placement. O(n log n) time, O(1) space.",
+    output: "Input: [[10,16],[2,8],[1,6],[7,12]]\nOutput: 2\n\nInput: [[1,2],[3,4],[5,6],[7,8]]\nOutput: 4",
+    solution: `function findMinArrowShots(points) {\n  points.sort((a, b) => a[1] - b[1]);\n  let arrows = 1, end = points[0][1];\n  for (let i = 1; i < points.length; i++) {\n    if (points[i][0] > end) { arrows++; end = points[i][1]; }\n  }\n  return arrows;\n}`,
+    solutions: {
+      python: `def findMinArrowShots(points):\n    if not points: return 0\n    points.sort(key=lambda x: x[1])\n    arrows, end = 1, points[0][1]\n    for s, e in points[1:]:\n        if s > end:\n            arrows += 1\n            end = e\n    return arrows`,
+      java: `class Solution {\n    public int findMinArrowShots(int[][] points) {\n        Arrays.sort(points, (a, b) -> Integer.compare(a[1], b[1]));\n        int arrows = 1, end = points[0][1];\n        for (int i = 1; i < points.length; i++) {\n            if (points[i][0] > end) { arrows++; end = points[i][1]; }\n        }\n        return arrows;\n    }\n}`,
+      javascript: `function findMinArrowShots(points) {\n  points.sort((a, b) => a[1] - b[1]);\n  let arrows = 1, end = points[0][1];\n  for (let i = 1; i < points.length; i++) {\n    if (points[i][0] > end) { arrows++; end = points[i][1]; }\n  }\n  return arrows;\n}`,
+      cpp: `class Solution {\npublic:\n    int findMinArrowShots(vector<vector<int>>& points) {\n        sort(points.begin(), points.end(), [](auto& a, auto& b){ return a[1] < b[1]; });\n        int arrows = 1, end = points[0][1];\n        for (int i = 1; i < points.size(); i++) {\n            if (points[i][0] > end) { arrows++; end = points[i][1]; }\n        }\n        return arrows;\n    }\n};`,
+    },
+    timeComplexity: "O(n log n)",
+    tags: ["leetcode-75", "intervals"],
+  },
+];
+
+// Build a map of LC75 entries by id for fast lookup
+const lc75Map = new Map(lc75.map((q) => [q.id, { ...sharedMeta, ...q }]));
+
+// Replace existing LC75 entries in the bank, then append any new ones
+const lc75Ids = new Set(lc75Map.keys());
+const filtered = bank.filter((q) => !lc75Ids.has(q.id));
+const updated = [...filtered, ...lc75Map.values()];
+
+writeFileSync(filePath, JSON.stringify(updated, null, 2), "utf8");
+console.log(
+  `✅ Done. question-bank.json now has ${updated.length} questions (${lc75Map.size} LC75 entries upserted).`
+);
